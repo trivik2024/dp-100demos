@@ -29,6 +29,7 @@ $RANDOM_REGION = Get-Random -InputObject $REGIONS
 
 $WORKSPACE_NAME = "mlw-dp100-l$suffix"
 $COMPUTE_CLUSTER = "aml-cluster"
+$COMPUTE_INSTANCE="ci$suffix"
 
 Write-Host "Register the Machine Learning resource provider:"
 az provider register --namespace $RESOURCE_PROVIDER
@@ -41,14 +42,25 @@ Write-Host "Create an Azure Machine Learning workspace:"
 az ml workspace create --name $WORKSPACE_NAME | Out-Null
 az configure --defaults workspace=$WORKSPACE_NAME
 
+# Create compute instance
+Write-Host "Creating a compute instance with name: " $COMPUTE_INSTANCE
+az ml compute create --name $COMPUTE_INSTANCE --size STANDARD_DS11_V2 --type ComputeInstance 
+
+
 Write-Host "Creating a compute cluster with name: $COMPUTE_CLUSTER"
 az ml compute create --name $COMPUTE_CLUSTER --size STANDARD_DS11_V2 --max-instances 2 --type AmlCompute
 
 Write-Host "Creating a data asset with name: diabetes-folder"
-az ml data create --name diabetes-folder --path ./data
+az ml data create --type uri_file --name "diabetes-data" --path ./data/diabetes.csv 
 
-Write-Host "Creating components"
-az ml component create --file ./fix-missing-data.yml
-az ml component create --file ./normalize-data.yml
-az ml component create --file ./train-decision-tree.yml
-az ml component create --file ./train-logistic-regression.yml
+#az ml data create --name diabetes-folder --path ./data
+
+# Create data assets
+#echo "Create training data asset:"
+
+
+#Write-Host "Creating components"
+#az ml component create --file ./fix-missing-data.yml
+#az ml component create --file ./normalize-data.yml
+#az ml component create --file ./train-decision-tree.yml
+#az ml component create --file ./train-logistic-regression.yml
