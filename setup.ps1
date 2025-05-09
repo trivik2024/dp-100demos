@@ -1,3 +1,5 @@
+#install Windows Subsystem for linux 
+wsl --install 
 #install python with required modules
 python -m ensurepip --upgrade
 python -m pip install --upgrade pip setuptools
